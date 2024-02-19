@@ -6,12 +6,11 @@ import (
 	"net/http"
 
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
-	opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
+	worldsHelloed = prometheus.NewCounter(prometheus.CounterOpts{
 		Name: "test_application_hellos",
 		Help: "The total number of worlds we have said hello to",
 	})
@@ -26,13 +25,21 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	log.Print(headers)
-	opsProcessed.Inc()
+	worldsHelloed.Inc()
 	fmt.Fprintf(w, "Hello world!")
 }
 
 func main() {
 	log.Printf("Starting Server")
-	http.HandleFunc("/", homeHandler)
-	http.Handle("/metrics", promhttp.Handler())
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	r := prometheus.NewRegistry()
+	r.MustRegister(worldsHelloed)
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", homeHandler)
+	mux.Handle("/metrics", promhttp.HandlerFor(r, promhttp.HandlerOpts{}))
+
+	var server = &http.Server{Addr: ":8080", Handler: mux}
+
+	log.Fatal(server.ListenAndServe())
 }
