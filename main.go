@@ -14,7 +14,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 			headers += name + value
 		}
 	}
-	log.Printf(headers)
+	log.Print(headers)
 	fmt.Fprintf(w, "Hello world!")
 }
 
