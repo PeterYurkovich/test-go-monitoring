@@ -1,5 +1,11 @@
 package main
 
+/**
+ * inspiration from:
+ *    https://github.com/brancz/prometheus-example-app
+ *    https://github.com/IBM/Golang
+ *    https://github.com/rgerardi/hellogo
+ */
 import (
 	"fmt"
 	"log"
