@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -21,5 +23,6 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	log.Printf("Starting Server")
 	http.HandleFunc("/", homeHandler)
+	http.Handle("/metrics", promhttp.Handler())
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
